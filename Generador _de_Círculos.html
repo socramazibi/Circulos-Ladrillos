@@ -1,0 +1,88 @@
+<!DOCTYPE html><html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generador de Círculos para Brickadia</title>
+  <style>
+    body {
+      font-family: monospace;
+      background: #111;
+      color: #0f0;
+      padding: 20px;
+      margin: 0;
+    }
+    input, button {
+      padding: 10px;
+      margin: 5px 0;
+      font-family: monospace;
+      font-size: 16px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    pre {
+      background: #000;
+      padding: 10px;
+      border: 1px solid #0f0;
+      white-space: pre;
+      overflow-x: auto;
+      display: block;
+      min-width: 100%;
+    }
+    #info {
+      margin-top: 10px;
+      font-size: 16px;
+    }
+    @media (min-width: 600px) {
+      input, button {
+        width: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>🧱 Generador de Círculos para Brickadia</h1>
+  <label>Radio (en bloques): <input type="number" id="radius" min="1" value="5"></label>
+  <br>
+  <button onclick="generateCircle()">Generar</button>
+  <div id="info"></div>
+  <pre id="output"></pre>  <script>
+    function generateCircle() {
+      const r = parseInt(document.getElementById("radius").value);
+      const diameter = r * 2 + 1;
+      const grid = Array.from({ length: diameter }, () => Array(diameter).fill("  "));
+      let blockCount = 0;
+
+      function plot(x, y) {
+        const cx = x + r;
+        const cy = y + r;
+        if (cx >= 0 && cy >= 0 && cx < diameter && cy < diameter && grid[cy][cx] === "  ") {
+          grid[cy][cx] = "⬛";
+          blockCount++;
+        }
+      }
+
+      let x = r;
+      let y = 0;
+      let decision = 1 - r;
+
+      while (x >= y) {
+        plot(x, y); plot(y, x); plot(-x, y); plot(-y, x);
+        plot(-x, -y); plot(-y, -x); plot(x, -y); plot(y, -x);
+
+        y++;
+        if (decision <= 0) {
+          decision += 2 * y + 1;
+        } else {
+          x--;
+          decision += 2 * (y - x) + 1;
+        }
+      }
+
+      const output = grid.map(row => row.join(""))
+                         .join("\n");
+
+      document.getElementById("output").textContent = output;
+      document.getElementById("info").textContent = `Total de bloques necesarios: ${blockCount}`;
+    }
+  </script></body>
+</html>
